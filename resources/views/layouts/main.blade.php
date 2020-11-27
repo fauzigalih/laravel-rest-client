@@ -23,11 +23,8 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
               <ul class="navbar-nav ml-auto">
-                <li class="nav-item {{ ($route !== 'api' && $route !== 'help') ? 'active' : '' }}">
+                <li class="nav-item {{ $route !== 'help' ? 'active' : '' }}">
                   <a class="nav-link" href="{{ url('/') }}">Home</a>
-                </li>
-                <li class="nav-item {{ $route === 'api' ? 'active' : '' }}">
-                  <a class="nav-link" href="{{ url('api') }}">API</a>
                 </li>
                 <li class="nav-item {{ $route === 'help' ? 'active' : '' }}">
                   <a class="nav-link" href="{{ url('help') }}">Help</a>
