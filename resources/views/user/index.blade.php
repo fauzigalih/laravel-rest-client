@@ -23,8 +23,8 @@
             <td>{{ $model['email'] }}</td>
             <td>{{ $model['phone'] }}</td>
             <td>
-              <a href="{{ url('show/'.$model['id']) }}"><i class="fa fa-eye" aria-hidden="true"></i></a>
-              <a href="{{ url('edit/'.$model['id']) }}"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
+              <a href="{{ url('show?id='.$model['id']) }}"><i class="fa fa-eye" aria-hidden="true"></i></a>
+              <a href="{{ url('edit?id='.$model['id']) }}"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
               <a href="#" data-toggle="modal" data-target="#confirm{{ $model['id'] }}"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
               <!-- Modal -->
               <div class="modal fade" id="confirm{{ $model['id'] }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -41,7 +41,7 @@
                     </div>
                     <div class="modal-footer">
                       <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                      {!! Form::open(['url' => 'destroy/'.$model['id'], 'method' => 'DELETE']) !!}
+                      {!! Form::open(['url' => 'destroy?id='.$model['id'], 'method' => 'DELETE']) !!}
                         <button type="submit" class="btn btn-danger">Delete</button>
                       {!! Form::close() !!}
                     </div>
