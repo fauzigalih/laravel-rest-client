@@ -8,9 +8,11 @@ use Illuminate\Support\Facades\Http;
 
 class UserController extends Controller
 {
-
+    // Control url api service
     const BASE_URL = 'localhost/rest-server/public';
     const URL_TARGET = 'http://' . self::BASE_URL . '/api/dev';
+    const KEY = 'AU3t3wWxeR7pJgUKQZFH';
+
     /**
      * Display a listing of the resource.
      *
@@ -19,9 +21,10 @@ class UserController extends Controller
     public function index()
     {
         $response = Http::get(self::URL_TARGET, [
-            'key' => 'AU3t3wWxeR7pJgUKQZFH'
+            'key' => self::KEY
         ]);
         $models = json_decode($response, true)['data'];
+
         return view('user.index', ['models' => $models]);
     }
 
@@ -43,12 +46,25 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        User::validateData($request);
-        $create = User::create([
+        $response = Http::get(self::URL_TARGET, [
+            'key' => self::KEY
+        ]);
+        $result = json_decode($response, true)['data'];
+        
+        $create = Http::asForm()->post(self::URL_TARGET, [
+            'key' => self::KEY,
             'name' => $request->name,
             'email' => $request->email,
             'phone' => $request->phone
         ]);
+
+        for ($i = 0; $i < count($result); $i++) {
+            if ($request->email === $result[$i]['email']) {
+                $result = json_decode($create, true);
+                return redirect('create')->with('danger', $result['message']);
+            }
+        }
+
         if ($create) {
             return redirect('/')->with('success', 'Data created successfully!');
         }else{
@@ -62,9 +78,13 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(User $user)
+    public function show(Request $request)
     {
-        $model = User::findOrFail($user->id);
+        $response = Http::get(self::URL_TARGET, [
+            'key' => self::KEY,
+            'id' => $request->id
+        ]);
+        $model = json_decode($response, true)['data'];
         return view('user.show', ['model' => $model]);
     }
 
@@ -74,9 +94,14 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit(User $user)
+    public function edit(Request $request)
     {
-        $model = User::findOrFail($user->id);
+        $response = Http::get(self::URL_TARGET, [
+            'key' => self::KEY,
+            'id' => $request->id
+        ]);
+        $model = json_decode($response, true)['data'];
+
         return view('user.edit', ['model' => $model]);
     }
 
@@ -89,21 +114,34 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user)
     {
-        $model = User::findOrFail($user->id);
-        User::validateData($request);
+        $response = Http::get(self::URL_TARGET, [
+            'key' => self::KEY
+        ]);
+        $result = json_decode($response, true)['data'];
         
-        if ($model->email !== $request->email) {
-            $count = User::where('email', 'like', '%' . $request->email . '%')->count();
-            if ($count > 0) {
-                return redirect('edit/'.$model->id)->with('error', $request->email . ' has already been taken.');
-            }
-        }
-        
-        $update = $model->update([
+        $update = Http::asForm()->put(self::URL_TARGET, [
+            'key' => self::KEY,
+            'id' => $request->id,
             'name' => $request->name,
             'email' => $request->email,
             'phone' => $request->phone
         ]);
+
+        $index = 0;
+        for ($i = 0; $i < count($result); $i++) {
+            if ($request->id == $result[$i]['id']) {
+                $index = $i;
+            }
+        }
+
+        if ($request->email !== $result[$index]['email']) {
+            for ($i = 0; $i < count($result); $i++) {
+                if ($request->email === $result[$i]['email']) {
+                    $result = json_decode($update, true);
+                    return redirect('edit?id='.$request->id)->with('danger', $result['message']);
+                }
+            }
+        }
 
         if ($update) {
             return redirect('/')->with('success', 'Data was updated successfully!');
@@ -118,10 +156,13 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(User $user)
+    public function destroy(Request $request)
     {
-        $model = User::findOrFail($user->id);
-        $delete = $model->delete();
+        $delete = Http::asForm()->delete(self::URL_TARGET, [
+            'key' => self::KEY,
+            'id' => $request->id
+        ]);
+
         if ($delete) {
             return redirect('/')->with('success', 'Data deleted successfully!');
         }else{
