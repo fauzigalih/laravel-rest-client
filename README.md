@@ -10,3 +10,11 @@ Instalations
 - Activate generate key for your app web
 - Refresh browser
 - Finish
+
+
+How to use
+- Create user in laravel rest server
+- Generate key with custom action in laravel rest server
+- Copy key and paste in laravel rest client in file ApiController, and customize bash_url in ApiController 
+- Refresh browser
+- Finish
